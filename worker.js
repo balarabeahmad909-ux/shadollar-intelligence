@@ -1,3 +1,4 @@
+// ShaDollar Intelligence Cloudflare Worker
 export default {
   async fetch(request, env) {
     try {
