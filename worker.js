@@ -1,4 +1,5 @@
-// ShaDollar Intelligence Worker v3
+// ShaDollar Intelligence Worker v4
+
 export default {
   async fetch(request, env) {
     try {
@@ -11,11 +12,28 @@ export default {
         const chatId = message.chat.id;
         const text = message.text || "";
 
+        const aiResponse = await env.AI.run(
+          "@cf/meta/llama-3.1-8b-instruct-fast",
+          {
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are ShaDollar Intelligence, a careful analytical assistant. " +
+                  "Answer clearly and simply. Separate facts from interpretation. " +
+                  "When information is uncertain, say so. Do not invent facts."
+              },
+              {
+                role: "user",
+                content: text
+              }
+            ]
+          }
+        );
+
         const reply =
-          "🤖 ShaDollar Intelligence\n\n" +
-          "I received your message:\n\n" +
-          `"${text}"\n\n` +
-          "The bot is connected and ready.";
+          aiResponse?.response ||
+          "I could not generate an analysis right now.";
 
         await fetch(
           `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
