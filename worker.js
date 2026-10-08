@@ -1,5 +1,4 @@
 // ShaDollar Intelligence Worker v4
-
 export default {
   async fetch(request, env) {
     try {
