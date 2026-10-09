@@ -27,26 +27,7 @@ export default {
         throw new Error("Workers AI binding AI is missing.");
       }
 
-      let webResearch = "No live search results were available.";
-
-      try {
-        const searchResponse = await fetch(
-          "https://api.tavily.com/search",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              api_key: env.TAVILY_API_KEY,
-              query: message.text,
-              search_depth: "basic",
-              max_results: 5
-            })
-          }
-        );
-
-              let webResearch = "No live search results were available.";
+          let webResearch = "No live search results were available.";
 
       try {
         const searchResponse = await fetch(
@@ -77,16 +58,19 @@ export default {
               )
               .join("\n\n");
           } else {
-            webResearch = "LIVE SEARCH RETURNED NO RESULTS. Tell the user no usable live search results were found. Do not invent current facts or sources.";
+            webResearch =
+              "LIVE SEARCH RETURNED NO RESULTS. Do not invent sources or claim live research succeeded.";
           }
         } else {
           const errorDetails = await searchResponse.text();
           console.error("Tavily search error:", errorDetails);
-          webResearch = "LIVE SEARCH FAILED. The search service returned an error. Tell the user live verification failed and do not present current facts as verified.";
+          webResearch =
+            "LIVE SEARCH FAILED. Do not present current facts as verified.";
         }
       } catch (error) {
         console.error("Tavily request failed:", error);
-        webResearch = "LIVE SEARCH FAILED. The request failed. Tell the user live verification failed and do not present current facts as verified.";
+        webResearch =
+          "LIVE SEARCH FAILED. Do not present current facts as verified.";
       }
 
       const result = await env.AI.run(
