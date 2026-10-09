@@ -75,25 +75,34 @@ Explain technical ideas in plain English. Be analytical, fair-minded, and comple
     }
 
     try {
-      const telegramResponse = await fetch(
-        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: reply
-          })
-        }
-      );
+     
+    try {
+      const chunks = [];
+      for (let i = 0; i < reply.length; i += 3500) {
+        chunks.push(reply.slice(i, i + 3500));
+      }
 
-      if (!telegramResponse.ok) {
-        console.error(
-          "Telegram sendMessage error:",
-          await telegramResponse.text()
+      for (const chunk of chunks) {
+        const telegramResponse = await fetch(
+          `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: chunk
+            })
+          }
         );
+
+        if (!telegramResponse.ok) {
+          console.error(
+            "Telegram sendMessage error:",
+            await telegramResponse.text()
+          );
+        }
       }
     } catch (error) {
       console.error("Telegram connection error:", error);
