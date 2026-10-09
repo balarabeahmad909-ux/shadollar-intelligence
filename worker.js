@@ -66,14 +66,17 @@ export default {
         }
       } catch (error) {
         console.error("Tavily request failed:", error);
+        webResearch = "LIVE SEARCH FAILED. Tell the user live search failed. Do not claim current facts are verified.";
+      }
+      if (webResearch === "No live search results were available.") {
+        webResearch = "NO LIVE SEARCH RESULTS. Do not invent sources or claim live research succeeded.";
       }
       const result = await env.AI.run(
         "@cf/meta/llama-3.1-8b-instruct-fast",
         {
           max_tokens: 2048,
           messages: [
-            {
-            
+            { 
 role: "system",
 content: `You are ShaDollar Intelligence, a rigorous research and analytical assistant.
 
