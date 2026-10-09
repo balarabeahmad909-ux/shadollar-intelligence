@@ -39,9 +39,11 @@ export default {
             },
             body: JSON.stringify({
               api_key: env.TAVILY_API_KEY,
-              query: `${message.text} Brent crude oil latest price October 10 2026`,
-              search_depth: "basic",
-              max_results: 5
+             query: `${message.text} Brent crude oil latest price`,
+topic: "news",
+time_range: "day",
+search_depth: "basic",
+max_results: 5
             })
           }
         );
