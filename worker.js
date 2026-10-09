@@ -27,6 +27,46 @@ export default {
         throw new Error("Workers AI binding AI is missing.");
       }
 
+      let webResearch = "No live search results were available.";
+
+      try {
+        const searchResponse = await fetch(
+          "https://api.tavily.com/search",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              api_key: env.TAVILY_API_KEY,
+              query: message.text,
+              search_depth: "basic",
+              max_results: 5
+            })
+          }
+        );
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+
+          if (searchData.results?.length) {
+            webResearch = searchData.results
+              .map((item, index) =>
+                `${index + 1}. ${item.title}\n` +
+                `Source: ${item.url}\n` +
+                `Information: ${item.content}`
+              )
+              .join("\n\n");
+          }
+        } else {
+          console.error(
+            "Tavily search error:",
+            await searchResponse.text()
+          );
+        }
+      } catch (error) {
+        console.error("Tavily request failed:", error);
+      }
       const result = await env.AI.run(
         "@cf/meta/llama-3.1-8b-instruct-fast",
         {
@@ -57,7 +97,13 @@ Explain technical ideas in plain English. Be analytical, fair-minded, and comple
             },
             {
               role: "user",
-              content: message.text
+              
+              content: `User question: ${message.text}
+
+Live web research results:
+${webResearch}
+
+Use these results as evidence. Cite relevant sources with their URLs. Clearly distinguish verified facts from analysis, and disclose when evidence is insufficient.`
             }
           ]
         }
