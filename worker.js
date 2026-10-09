@@ -75,8 +75,6 @@ Explain technical ideas in plain English. Be analytical, fair-minded, and comple
     }
 
     try {
-     
-    try {
       const chunks = [];
       for (let i = 0; i < reply.length; i += 3500) {
         chunks.push(reply.slice(i, i + 3500));
