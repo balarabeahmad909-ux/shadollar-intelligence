@@ -46,6 +46,25 @@ export default {
           }
         );
 
+              let webResearch = "No live search results were available.";
+
+      try {
+        const searchResponse = await fetch(
+          "https://api.tavily.com/search",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              api_key: env.TAVILY_API_KEY,
+              query: message.text,
+              search_depth: "basic",
+              max_results: 5
+            })
+          }
+        );
+
         if (searchResponse.ok) {
           const searchData = await searchResponse.json();
 
@@ -57,20 +76,19 @@ export default {
                 `Information: ${item.content}`
               )
               .join("\n\n");
+          } else {
+            webResearch = "LIVE SEARCH RETURNED NO RESULTS. Tell the user no usable live search results were found. Do not invent current facts or sources.";
           }
         } else {
-          console.error(
-            "Tavily search error:",
-            await searchResponse.text()
-          );
+          const errorDetails = await searchResponse.text();
+          console.error("Tavily search error:", errorDetails);
+          webResearch = "LIVE SEARCH FAILED. The search service returned an error. Tell the user live verification failed and do not present current facts as verified.";
         }
       } catch (error) {
         console.error("Tavily request failed:", error);
-        webResearch = "LIVE SEARCH FAILED. Tell the user live search failed. Do not claim current facts are verified.";
+        webResearch = "LIVE SEARCH FAILED. The request failed. Tell the user live verification failed and do not present current facts as verified.";
       }
-      if (webResearch === "No live search results were available.") {
-        webResearch = "NO LIVE SEARCH RESULTS. Do not invent sources or claim live research succeeded.";
-      }
+
       const result = await env.AI.run(
         "@cf/meta/llama-3.1-8b-instruct-fast",
         {
