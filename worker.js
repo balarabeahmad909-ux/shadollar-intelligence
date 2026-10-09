@@ -103,34 +103,25 @@ Explain technical ideas in plain English. Be analytical, fair-minded, and comple
             {
               role: "user",
               
-              content: `User question: ${message.text}
+     content: `User question: ${message.text}
 
 Live web research results:
 ${webResearch}
 
 RESEARCH RULES:
-1. Use the supplied search results as evidence, not as proof that information is current.
-2. For prices, economic figures, and breaking news, state the actual quote or publication date provided by the source.
-3. Never describe an old result as the latest available data. If the newest usable result is dated before today, explicitly say it may be outdated.
-4. Distinguish the publication date, market quote date, and time the information was retrieved. Never invent a timestamp.
-5. Cite the direct source URL for each important factual claim. Do not claim a source was verified unless its returned information supports the claim.
-6. If search failed or returned no usable results, state that clearly. Do not fill the gap with invented current facts.
-7. Do not claim high confidence merely because a source is reputable. Explain important uncertainties and disagreements between sources.
-8. For commodity prices, identify the benchmark or futures contract and its date where available. Do not treat different contracts or quote types as equivalent.
-9. Separate verified facts from analysis. Explain causes only when supported by evidence.
-10. For Nigerian implications, explain the actual transmission mechanism and distinguish confirmed effects from possibilities.
-
-Answer the user's question directly. Keep the answer focused, factual, and useful. Avoid repetitive generic sections.`
-
-Live web research results:
-${webResearch}
-
-Use these results as evidence. Cite relevant sources with their URLs. Clearly distinguish verified facts from analysis, and disclose when evidence is insufficient.`
-            }
+1. Check the dates on search results before describing information as current.
+2. Never call old information the latest available. Disclose when results may be outdated.
+3. Never invent prices, dates, timestamps, sources, or verification.
+4. Cite relevant source URLs.
+5. Clearly state when search fails or returns no usable results.
+6. Distinguish facts from analysis and explain uncertainty.
+7. Identify the commodity benchmark or futures contract where available.
+8. Explain Nigerian impacts only when supported by evidence.
+9. Keep answers focused and avoid repetitive generic sections.`
+                       }
           ]
         }
       );
-
       reply =
         result?.response ||
         "The AI returned no answer. Please try again.";
