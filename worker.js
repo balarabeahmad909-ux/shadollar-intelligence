@@ -39,7 +39,7 @@ export default {
             },
             body: JSON.stringify({
               api_key: env.TAVILY_API_KEY,
-             query: `${message.text} Brent crude oil latest price`,
+            query: message.text,
 topic: "news",
 time_range: "day",
 search_depth: "basic",
