@@ -1,61 +1,88 @@
-// ShaDollar Intelligence Worker v4
+// ShaDollar Intelligence Worker v5
 export default {
   async fetch(request, env) {
+    if (request.method !== "POST") {
+      return new Response("🚀 ShaDollar Intelligence is running.");
+    }
+
+    let update;
+
     try {
-      if (request.method === "POST") {
-        const update = await request.json();
-        const message = update.message;
+      update = await request.json();
+    } catch {
+      return new Response("Invalid request", { status: 400 });
+    }
 
-        if (!message) return new Response("OK");
+    const message = update.message;
 
-        const chatId = message.chat.id;
-        const text = message.text || "";
+    if (!message?.chat?.id || !message.text) {
+      return new Response("OK");
+    }
 
-        const aiResponse = await env.AI.run(
-          "@cf/meta/llama-3.1-8b-instruct-fast",
-          {
-            messages: [
-              {
-                role: "system",
-                content:
-                  "You are ShaDollar Intelligence, a careful analytical assistant. " +
-                  "Answer clearly and simply. Separate facts from interpretation. " +
-                  "When information is uncertain, say so. Do not invent facts."
-              },
-              {
-                role: "user",
-                content: text
-              }
-            ]
-          }
-        );
+    const chatId = message.chat.id;
+    let reply;
 
-        const reply =
-          aiResponse?.response ||
-          "I could not generate an analysis right now.";
-
-        await fetch(
-          `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              chat_id: chatId,
-              text: reply
-            })
-          }
-        );
-
-        return new Response("OK");
+    try {
+      if (!env.AI) {
+        throw new Error("Workers AI binding AI is missing.");
       }
 
-      return new Response("🚀 ShaDollar Intelligence is running.");
+      const result = await env.AI.run(
+        "@cf/meta/llama-3.1-8b-instruct",
+        {
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are ShaDollar Intelligence. " +
+                "Answer clearly and simply. Separate facts " +
+                "from interpretation. Admit uncertainty and " +
+                "never invent facts."
+            },
+            {
+              role: "user",
+              content: message.text
+            }
+          ]
+        }
+      );
+
+      reply =
+        result?.response ||
+        "The AI returned no answer. Please try again.";
     } catch (error) {
-      return new Response("Error: " + error.message, {
-        status: 500
-      });
+      console.error("ShaDollar AI error:", error);
+
+      reply =
+        "ShaDollar diagnostic: AI request failed. " +
+        (error?.message || "Unknown error").slice(0, 700);
     }
+
+    try {
+      const telegramResponse = await fetch(
+        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: reply
+          })
+        }
+      );
+
+      if (!telegramResponse.ok) {
+        console.error(
+          "Telegram sendMessage error:",
+          await telegramResponse.text()
+        );
+      }
+    } catch (error) {
+      console.error("Telegram connection error:", error);
+    }
+
+    return new Response("OK");
   }
 };
