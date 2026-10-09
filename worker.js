@@ -32,7 +32,17 @@ export default {
         {
           messages: [
             {
-              role: "system",
+              role: "**Current Economic Situation in Nigeria:**
+
+1. **Fiscal Deficit:** Nigeria's fiscal deficit has been rising, reaching N5.6 trillion (approximately $13.5 billion USD) in 2022. This is largely due to a decline in oil revenue, which accounts for about 70% of the country's revenue.
+2. **Inflation:** Nigeria's inflation rate has been high, averaging around 15.6% in 2022. This is mainly due to a combination of factors, including a decline in agricultural productivity, a rise in food prices, and a devaluation of the naira.
+3. **Exchange Rate:** The naira has been devalued, with the official exchange rate standing at around N430 per USD in 2022. This has led to a decrease in purchasing power for ordinary citizens.
+4. **Unemployment:** Nigeria's unemployment rate has been high, with estimates suggesting that around 33% of the labor force is unemployed.
+5. **Poverty:** Nigeria has one of the highest poverty rates in the world, with an estimated 40% of the population living below the poverty line.
+
+**Implications for Ordinary Citizens:**
+
+1. **Increased Prices:** The high inflation rate and devaluation of the",
               content:
                 "You are ShaDollar Intelligence. " +
                 "Answer clearly and simply. Separate facts " +
